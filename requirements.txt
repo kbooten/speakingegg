@@ -5,5 +5,5 @@ scikit_learn==0.20.2
 requests==2.18.4
 gunicorn==19.9.0
 more-itertools==6.0.0
-spacyspacy>=2.0.0,<3.0.0
+spacy>=2.0.0,<3.0.0
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.1.0/en_core_web_sm-2.1.0.tar.gz

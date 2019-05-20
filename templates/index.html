@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>The Speaking Egg</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js"></script>
+    <style>
+    </style>
+  </head>
+  <body>
+    <div id="sideBar">
+      <div id="sideBarInner">
+        <div id="clickDiv">
+          <h2>The Speaking Egg</h2>
+          <input type="text" name="feedUrl" id="feedUrl" placeholder="Feed me sentences"><button id="feedButton" onclick="urlFeed()">Feed</button>
+          <br>
+          <button onclick="praise()" >🍭</button><button onclick="scold()" >👎</button>
+        </div>   
+        <div id="infoButtons">
+          <button  id="vocabButton" class="infoButton" onclick="displayVocab()" >Vocab</button><button id="grammarButton" class="infoButton" onclick="displayGrammar()" >Grammar</button><button id="featuresButton" class="infoButton" onclick="displayFeatures()" >Features</button>
+        </div>   
+        <div id="infoLayer">
+        </div>
+      </div>
+    </div>
+
+
+    <div id="speechDiv">
+      <span id='speech'>...</span>
+    </div>
+
+
+    <div id="forestDiv">
+    </div>
+
+    <div id="animalDiv">
+
+      <svg id="animalSvg"></svg>
+      <span id='eye1' class="eye">👁</span>
+      <span id='eye2' class="eye">👁</span>
+      <span id='tear'>💧</span> 
+
+      <img id='eyeLid1' class="lid" src="{{ url_for('static', filename='eyelid.svg') }}"></img>
+      <img id='eyeLid2' class="lid" src="{{ url_for('static', filename='eyelid.svg') }}"></img> 
+      <span id='mouth0Happy' class="mouth">(</span> 
+      <span id='mouth0Sad' class="mouth">(</span>  
+      <span id='mouth0Neutral' class="mouth">—</span>  
+      <img id='mouth0Ooops' class="mouth mouthSpeak" src="{{ url_for('static', filename='mouth9.svg') }}"></img>  
+
+      <img id='mouth1' class="mouth mouthSpeak" src="{{ url_for('static', filename='mouth1.svg') }}"></img>  
+
+      <img id='mouth2' class="mouth mouthSpeak" src="{{ url_for('static', filename='mouth2.svg') }}"></img>  
+
+      <img id='mouth3' class="mouth mouthSpeak" src="{{ url_for('static', filename='mouth3.svg') }}"></img>
+
+      <img id='mouth4' class="mouth mouthSpeak" src="{{ url_for('static', filename='mouth4.svg') }}"></img>
+
+      <img id='mouth5' class="mouth mouthSpeak" src="{{ url_for('static', filename='mouth5.svg') }}"></img>
+
+
+      <img id='mouth6' class="mouth mouthSpeak" src="{{ url_for('static', filename='mouth6.svg') }}"></img>
+
+
+      <img id='mouth7' class="mouth mouthSpeak" src="{{ url_for('static', filename='mouth7.svg') }}"></img>
+
+      <img id='mouth8' class="mouth mouthSpeak" src="{{ url_for('static', filename='mouth8.svg') }}"></img>
+
+    </div>
+
+  </body>
+	<script>
+
+    var templates = []
+    var features = []
+    var vocab = []
+
+    var infoOn = null; 
+
+    var questionTimeOut = false;
+
+    //////////////////////
+    // critter creation //
+    //////////////////////
+
+
+    var breathSpeed = 500;
+    var emotionalState = 0;
+    var s = Snap("#animalSvg");
+    var interestLevel = 0;
+    var stimulation = 100;
+    // var bPath0_0 = 200
+    // var bPath0_1 = 750
+    // var breathPath1 =     "M 250 1000 C "+bPath0_0+" 900 950 "+bPath0_1+" 850 1000"
+    // var breathPath1 = "M 570 840 Q 690 600 800 830 Q 840 940 750 1000 L 640 1000 Q 530 950 570 840 "//"M 580 860 Q 692 548 804 852 C 824 936 864 1028 720 1072 C 568 1028 544 956 580 860" 
+    // var breathPath1 = "M 570 840 Q 690 600 800 830 Q 840 940 750 1000 L 640 1000 Q 530 950 570 840 "
+    // var breathPath2 = "M 570 820 Q 690 590 800 820 Q 850 930 770 1000 L 610 1000 Q 510 950 570 820 "
+
+    // //"M 580 860 Q 692 548 804 852 C 824 936 864 1028 720 1072 C 568 1028 544 956 580 860" 
+    // var breathPath2 = "M 570 i1  Q 690 i2  800 i3  Q i4  i5  i6  1000 L i7  1000 Q i8  950 570 i9 "
+    
+    var breathPath1 = "M 570 840 Q 690 600 800 830 Q 840 940 750 1000 L 640 1000 Q 530 950 570 840 "//"M 580 860 Q 692 548 804 852 C 824 936 864 1028 720 1072 C 568 1028 544 956 580 860" 
+
+    var breathPath2 = "M 570 820 Q 690 590 800 820 Q 850 930 770 1000 L 610 1000 Q 510 950 570 820 "
+
+    // var breathPath1 = "M 570 "+i1+" Q 690 "+i2+" 800 "+i3+" Q "+i4+" "+i5+" "+i6+" 1000 L"+i7+"1000 Q "+i8+" 950 570 "+i9;
+    // var breathPath2 = "M 570 "+x1+" Q 690 "+x2+" 800 "+x3+" Q "+x4+" "+x5+" "+x6+" 1000 L"+x7+"1000 Q "+x8+" 950 570 "+x9;
+
+
+
+
+    var i1 = 840
+    var i2 = 600
+    var i3 = 830
+    var i4 = 940
+    var i5 = 750
+    var i6 = 640
+    var i7 = 530
+
+    // var breathPath1 = "M 570 840 Q 690 600 800 830 Q 840 940 750 1000 L 640 1000 Q 530 950 570 840 "//"M 580 860 Q 692 548 804 852 C 824 936 864 1028 720 1072 C 568 1028 544 956 580 860" 
+
+    var breathPath1 = "M 570 "+i1+" Q 690 "+i2+" 800 "+i3+" Q "+i1+" "+i4+" "+i5+" 1000 L "+i6+" 1000 Q "+i7+" 950 570 "+i1
+
+
+    var x1 = 820
+    var x2 = 590
+    var x3 = 820
+    var x4 = 930
+    var x5 = 770
+    var x6 = 610
+    var x7 = 510
+    var x8 = 850
+
+    // var breathPath2 = "M 570 820    Q 690 590    800  820   Q  850    930    770    1000 L 610   1000 Q  510 950 570 820 "
+
+    var breathPath2 = "M 570 "+x1+" Q 690 "+x2+" 800 "+x3+" Q "+x8+" "+x4+" "+x5+" 1000 L "+x6+" 1000 Q "+x7+" 950 570 "+x1
+
+
+    var x1v = -1
+
+    var mainAnimal = s.path(breathPath1);
+    s.attr("fill","#e0a976")
+
+    var inhaling = true;   
+
+    var restingMouth = "#mouth0Neutral"; 
+
+    var reactingFace = false;
+
+
+    var letterBank = 0;
+
+
+    // BLINKING
+
+    function blink(){
+      if (Math.random()>.94){
+        $(".eye").hide();
+        setTimeout(function(){$(".eye").show();},100)       
+      }
+    }
+
+    var blinkInterval = setInterval(blink,300);
+
+
+    // BREATHING 
+
+    function breathe(){
+      if (inhaling==true){
+        var breath1=breathPath1;
+        var breath2=breathPath2;
+      } else{
+        var breath1=breathPath2;
+        var breath2=breathPath1;
+      }
+      var breathSpeed = calculateBreath();
+      //
+      var exhale = function(){inhaling=false;
+        mainAnimal.animate({d:breath1},breathSpeed.hale,mina.easeinout,pause)};
+      //
+      var pause = function(){inhaling=true;
+        mainAnimal.animate({},breathSpeed.pause,mina.easeinout,reset)};
+      //
+      var reset = function(){breathe();};     
+      //
+      var inhale = function(){inhaling=true;
+        mainAnimal.animate({d:breath2},breathSpeed.hale,mina.easeinout,exhale)};
+      //
+      inhale();
+    }
+
+
+    function calculateBreath(){
+      var breathSpeed = new Object();
+      breathSpeed.hale = Math.max(1500-interestLevel*50,100);
+      breathSpeed.pause = Math.max(2000-interestLevel*100,10);
+      return breathSpeed
+    }
+
+
+    var itsBreath = setTimeout(breathe,2000);
+
+
+    /// MOUTH MOVING
+
+    var speakingMouths = ["#mouth1","#mouth2","#mouth3","#mouth4"];
+    var eatingMouths = ["#mouth5","#mouth6","#mouth7","#mouth8"];
+
+      
+    var mouthCounter = 1;                     //  set your counter to 1
+
+    function speak_with_mouth(){
+      $(".mouth").css('visibility','hidden');
+      mouth = speakingMouths.shift();
+      console.log(mouth);
+      speakingMouths.push(mouth)
+      mouthLoop(speakingMouths);
+    }
+
+    function eat(){
+      $(".mouth").css('visibility','hidden');
+      mouth = eatingMouths.shift();
+      console.log(mouth);
+      eatingMouths.push(mouth)
+      mouthLoop(eatingMouths);
+    }
+
+
+    function mouthLoop(mouths) {           //  create a loop function
+      console.log("?")
+      setTimeout(function () {    //  call a 3s setTimeout when the loop is called
+        $(".mouth").css('visibility','hidden');
+        mouth = mouths.shift();
+        console.log(mouth);
+        mouths.push(mouth)
+        $(mouth).css('visibility','visible');
+        mouthCounter++;                     //  increment the counter
+        if (mouthCounter < 10) {            //  if the counter < 10, call the   loop function
+          mouthLoop(mouths);             //  ..  again which will trigger another 
+        } else {
+          resetMouth();
+        }                        //  ..  setTimeout()
+       }, 110)
+    }
+
+    function resetMouth(){
+      console.log("RESET")
+      mouthCounter = 1
+      $(".mouth").css('visibility','hidden');
+      $(restingMouth).css('visibility','visible');
+      console.log(restingMouth)
+    }
+
+
+    /// PRAISE
+    function praise(){
+      evaluateSpeech("+")
+      $(".mouth").css('visibility','hidden');
+      $("#mouth0Happy").css('visibility','visible');
+      reactingFace=true;
+      setTimeout(function(){
+        $("#mouth0Happy").css('visibility','hidden');
+        $(restingMouth).css('visibility','visible');
+        reactingFace=false;
+      },2000);
+    }
+
+    /// PRAISE
+    function scold(){
+      evaluateSpeech("-")
+      $(".mouth").css('visibility','hidden');
+      $("#mouth0Ooops").css('visibility','visible');
+      reactingFace=true;
+      setTimeout(function(){
+        $("#mouth0Ooops").css('visibility','hidden');
+        $(restingMouth).css('visibility','visible');
+        reactingFace=false;
+      },2000);      
+    }
+
+
+    /// FEED
+
+
+    function countLetters(){
+      /// add letters to letter bank to count how much text is input
+      letterBank += $("#feedUrl").val().length;
+    }
+
+
+    function feed(){
+      eat();
+      countLetters();
+      grow();
+    }
+
+
+    function grow(){
+      stimulate();
+      decValue = 50;
+      s.attr("fill",'#d4f442');
+      setTimeout(function(){s.attr("fill",'#e0a976')},200);
+
+      //i1 = Math.max(210,i1-3) //840  Math.max(10,bPath0_0-decValue+10)
+      i2 = Math.max(60,i2-2) // 600
+      //i3 = Math.max(60,i3-3) 
+      // i4 = Math.max(60,i4-3) 
+      i5 = Math.min(900,i5+1)
+      i6 = Math.max(200,i6-2) 
+      // i7 = Math.max(200,i7-3)
+
+      x1 = Math.max(20,x1-3) //820
+      x2 = Math.max(50,x2-3) //
+      x3 = Math.max(50,x3-3) //
+      //x4 = Math.max(100,x4-3) //
+      x5 = Math.min(980,x5+2)
+      x6 = Math.max(60,x6-3) 
+      x7 = Math.max(200,x7-3)
+      x8 = Math.min(990,x8+3)    
+
+
+      breathPath1 = "M 570 "+i1+" Q 690 "+i2+" 800 "+i3+" Q "+i1+" "+i4+" "+i5+" 1000 L "+i6+" 1000 Q "+i7+" 950 570 "+i1
+
+      breathPath2 = "M 570 "+x1+" Q 690 "+x2+" 800 "+x3+" Q "+x8+" "+x4+" "+x5+" 1000 L "+x6+" 1000 Q "+x7+" 950 570 "+x1
+
+
+      // bPath0_0 = Math.max(10,bPath0_0-decValue+10)
+      // bPath0_1 = Math.max(10,bPath0_1-decValue+10)
+      // bPath1_0 = Math.max(0,bPath1_0-decValue)
+      // bPath1_1 = Math.max(0,bPath1_1-decValue)
+      // breathPath1 =     "M 570 840 Q 690 600 800 830 Q 840 940 750 1000 L 640 1000 Q 530 950 570 840 " 
+      // breathPath2 =      "M 570 820 Q 690 590 800 820 Q 850 930 770 1000 L 610 1000 Q 510 950 570 820 "
+      //s.attr("fill","#ffd3f5")
+    }
+
+
+    function stimulate(){
+      stimulation = Math.min(stimulation + 60,200);
+      //happyFace();
+    }
+
+
+
+    /// FACES
+
+
+    function happyFace(){
+      restingMouth = "#mouth0Happy"
+      $(".mouth").css('visibility','hidden');
+      $(restingMouth).css('visibility','visible');
+      $(".lid").css('visibility','hidden');
+      $("#tear").css('visibility','hidden');
+    }
+
+
+
+    function sadFace(){
+      restingMouth = "#mouth0Sad"
+      $(".mouth").css('visibility','hidden');
+      $(restingMouth).css('visibility','visible');
+      $(".lid").css('visibility','visible');
+      $("#tear").css('visibility','hidden');
+    }
+
+
+    function verySadFace(){
+      restingMouth = "#mouth0Sad"
+      $(".mouth").css('visibility','hidden');
+      $(restingMouth).css('visibility','visible');
+      $(".lid").css('visibility','visible');
+      $("#tear").css('visibility','visible');
+    }
+
+
+    function neutralFace(){
+      restingMouth = "#mouth0Neutral"
+      $(".mouth").css('visibility','hidden');
+      $(restingMouth).css('visibility','visible');
+      $(".lid").css('visibility','hidden');
+      $("#tear").css('visibility','hidden');
+    }
+
+
+    function boredFace(){
+      restingMouth = "#mouth0Neutral"
+      $(".mouth").css('visibility','hidden');
+      $(restingMouth).css('visibility','visible');
+      $(".lid").css('visibility','visible');
+      $("#tear").css('visibility','hidden');
+    }
+
+
+    function destimulate(){
+      stimulation = Math.max(stimulation-1,0);
+      if (reactingFace!=true){
+        if (stimulation==0){
+          sadFace();
+        }else if (stimulation<45){
+          boredFace();
+        } else if (stimulation<70){
+          neutralFace();
+        }
+      }
+    }
+
+    //boredFace();
+
+    setInterval(destimulate,1000);
+
+
+
+
+
+
+
+
+    // //var hashkey = '{{hashkey}}'
+    // //console.log(hashkey)
+    // var startingSize = 30
+    // var maxSize = 120
+    // var growthTeachingMessage = false;
+    var topFeaturesMessage = false;
+    var templatesMessage = false;
+    var topVocabMessage = false;
+
+    // var teacherPoints = 0;
+    // var teachingThreshold = 10;
+    // var eggLevel = 1;
+
+    // $("#bot").css('font-size',startingSize+"px");
+
+
+    // function growEgg(){
+
+    //   startingSize+=1;
+    //   if (startingSize<maxSize){
+    //     $("#bot").animate({fontSize: startingSize + 2 + "px"},400,function(){
+    //       $("#bot").animate({fontSize: startingSize+"px"},100,function(){
+    //         if (growthTeachingMessage==false){
+    //           setTimeout(function(){window.alert("HOW DELICIOUS!  You just fed THE SPEAKING EGG some scrumptious words!\n\nSoon, we hope, it will begin to digest these words in new sentences, muttering novel utterances shaped by the chaos of its heart.\n\nAs you feed it, its sentences will slowly grow longer and more complicated.\n\nThe Egg wants to speak well, wants to pronounce wisdom suited to your concerns. But you too must let your heart be known.")},1000);
+    //           growthTeachingMessage=true;
+    //         }
+    //       });
+    //     });
+    //     //respeak();
+    //   }
+    // }
+
+
+    function urlFeed(){
+      if ($("#feedUrl").val().length>0){
+        //growEgg();
+        feed();
+        if (letterBank>2000){
+          letterBank = 0;
+          newTemplate = true;
+        }else{
+          newTemplate = false;
+        }
+        $.get('/read', {'text': $("#feedUrl").val(), "newTemplate":newTemplate}).done(function(data){
+          console.log(data)
+          vocab = data['vocab'];
+          if (vocab.length>3){
+            $("#vocabButton").css('visibility','visible');
+            if (infoOn=="vocab" && $("#vocabButton").is(":visible")){
+              displayVocab();
+            }
+          }
+          templates = data["templates"].reverse();
+          if (templates.length>3){
+            $("#grammarButton").css('visibility','visible');
+          }
+          if (infoOn=="grammar" && $("#grammarButton").is(":visible")){
+            displayGrammar();
+          }
+          if (data['aNewTemplate']!=null){
+            window.alert("You learned a new grammar!")
+          }
+        });
+        //updateModel("+",$("#feedUrl").val());
+        $('#feedUrl').val("")
+        $('#feedUrl').focus();     
+        //teacherPoints+=1;  
+      }
+    }
+
+
+    function askQuestion(text){
+      $.get("/askQuestion", {"text": JSON.stringify(text)}).done(function(data){
+        console.log(data);
+        question = data['question']
+        if (question!=null){
+          if (questionTimeOut==false){
+            questionTimeOut=true;
+            window.alert(data['question']);
+            setTimeout(function(){questionTimeOut=false;},6000*5);
+          }
+        }
+      });
+    }
+
+    function evaluateSpeech(sign){
+      currentText = $("#speech").text();
+      console.log(currentText);
+      if (currentText=="..."){
+        window.alert("Hmmm...you can't punish or reward it when it isn't saying anything.  Try feeding it more words!")
+      }else{
+        updateModel(sign,currentText);
+        askQuestion(currentText);
+      }
+      if (sign=="-"){
+        $("#speech").text("...");
+      }
+    }
+
+
+    function displayFeatures(){
+      if (features.length>10){
+        infoOn = "features";
+        $("#infoLayer").empty();
+        $("#infoLayer").append("<div class='displayLabel'>The Best Sentences:</div>");
+        for (var i = 0; i < features.length; i++) {
+          f = features[i]
+          $("#infoLayer").append("<span class='param'><span class='numbah'>"+(i+1)+"</span>  "+f+"</span>")
+        }
+        if (topFeaturesMessage==false){
+          topFeaturesMessage=true;
+          setTimeout(function(){window.alert("On the left you see the top features that THE SPEAKING EGG thinks that you like.\n\nWhen the Egg speaks, its little number brain tries to conform to these paramaters provided by you, its teacher and guardian.")},500)
+        }
+      }
+    }
+
+
+    function displayGrammar(){
+      $("#infoLayer").empty();
+      infoOn = "grammar";
+      $("#infoLayer").append("<div class='displayLabel'>Part-of-Speech <a href='https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html' target='_blank'>Templates</a>:</div>");
+      for (var i = 0; i < templates.length; i++){
+        f = templates[i]
+        $("#infoLayer").append("<span class='param'><span class='numbah'>"+(i+1)+"</span>  "+f+"</span>")
+      }
+      if (templatesMessage==false){
+        templatesMessage=true;
+        setTimeout(function(){window.alert("On the left you see the grammar templates that THE SPEAKING EGG uses to make sentences.")},500)
+      }
+    }  
+
+
+    function displayVocab(){
+      infoOn = "vocab";
+      $("#infoLayer").empty();
+      $("#infoLayer").append("<div class='displayLabel'>Top Vocab Words:</div>");
+
+      for (var i = 0; i < vocab.length; i++){
+        f = vocab[i]
+        $("#infoLayer").append("<span class='param'><span class='numbah'>"+(i+1)+"</span>  "+f+"</span>")
+      }
+      if (topVocabMessage==false){
+        topVocabMessage=true;
+        setTimeout(function(){window.alert("On the left you see the most common words in THE SPEAKING EGG's vocabulary.")},500)
+      }
+    }    
+
+
+
+    function updateModel(evaluation,text){
+      $.get("/retrain", {"evaluation": evaluation, "text": JSON.stringify(text)}).done(function(data){
+        console.log(data)
+        features = data['topFeatures'];
+        if (features.length>3){
+          $("#featuresButton").css('visibility','visible');
+        }
+        if (infoOn=="features" && $("#featuresButton").is(":visible")){
+          displayFeatures();
+        }
+        // vocab = data['topVocab'];
+        // templates = data["grammarTemplates"];
+      });
+    }
+
+
+    function speak(){
+      $.get("/speak").done(function(data){
+        console.log(data);
+        var newSpeech = data['utterance']
+        if (newSpeech!=null){
+          $("#speech").text(data['utterance']);
+          speak_with_mouth();
+        }else{
+          $("#speech").text("...");
+        }
+      });
+    }
+
+
+    var speechInterval = setInterval(speak, 10000);
+    $('#feedUrl').focus();     
+
+
+    // function evaluate_level(){
+    //   console.log(teacherPoints)
+    //   if (teacherPoints>=teachingThreshold){
+    //     congratulate_level();
+    //     teachingThreshold = teachingThreshold * 2;
+    //     eggLevel+=1;
+    //     $('#level-num').text(eggLevel);
+    //   }
+    // }  
+
+
+    var listOfQuotes = []
+
+    // function congratulate_level(){
+    //   if (listOfQuotes.length>0){
+    //     quote = listOfQuotes.pop();
+    //     window.alert("Well done!  THE SPEAKING EGG has levelled up.\n\nA dedicated instructor you are.\n\nRemember:\n'"+quote+"'");       
+    //   }else{
+    //     window.alert('Well done!  THE SPEAKING EGG has levelled up.')
+    //   }
+    // }
+
+    // setInterval(evaluate_level,1000);
+
+window.alert('Welcome to THE SPEAKING EGG.\n\nYou are going to teach the Egg to speak.\n\nTo do this, you must give it text to read, generated by you or copy/pasted from wherever.\n\nWhen it speaks, you can feed it a treat (🍭) to reward a good utterance or scold it (👎) to train it to not say that again.')
+
+setTimeout(function(){window.alert("If THE SPEAKING EGG gets stuck in a rut, saying the same thing again and again, try feeding it a generous helping of text. \n\n You can always reload the page, wiping its mind and starting over.")},1000*120)
+
+
+	</script>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

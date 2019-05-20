@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>The Speaking Egg</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js"></script>
+    <style>
+    </style>
+  </head>
+  <body>
+
+      <div class="column">
+        <div id="left">
+          <h1>The Speaking Egg</h1>
+          <h3>(Level: <span id="level-num">1</span>)</h3>
+          <div id="botBox">
+            <div id="bothBot">
+              <span id='bot' speech-bubble="...">🥚</span>
+            </div>
+          </div>
+            <div id="buttons">
+              <button onclick="evaluateSpeech('+')">🍭</button>
+              <button onclick="evaluateSpeech('-')">👎</button>
+            </div>
+            <div id="feeding">
+              <input type="text" name="feedUrl" id="feedUrl" placeholder="Feed me sentences"><button id="feedButton" onclick="urlFeed()">Feed</button>
+            </div>
+        </div>       
+      </div>
+
+
+      <div class="column">
+        <div id="right">
+         <h2>Egg thinks you like sentences that:</h2>
+          <div id="topParams"></div>           
+        </div>
+      </div>
+
+
+
+    </div> 
+  </body>
+	<script>
+
+    //var hashkey = '{{hashkey}}'
+    //console.log(hashkey)
+    var startingSize = 30
+    var maxSize = 120
+    var growthTeachingMessage = false;
+    var topFeaturesMessage = false;
+
+    var teacherPoints = 0;
+    var teachingThreshold = 10;
+    var eggLevel = 1;
+
+    $("#bot").css('font-size',startingSize+"px");
+
+
+    function growEgg(){
+
+      startingSize+=1;
+      if (startingSize<maxSize){
+        $("#bot").animate({fontSize: startingSize + 2 + "px"},400,function(){
+          $("#bot").animate({fontSize: startingSize+"px"},100,function(){
+            if (growthTeachingMessage==false){
+              setTimeout(function(){window.alert("HOW DELICIOUS!  You just fed THE SPEAKING EGG some scrumptious words!\n\nSoon, we hope, it will begin to digest these words in new sentences, muttering novel utterances shaped by the chaos of its heart.\n\nAs you feed it, its sentences will slowly grow longer and more complicated.\n\nThe Egg wants to speak well, wants to pronounce wisdom suited to your concerns. But you too must let your heart be known.")},1000);
+              growthTeachingMessage=true;
+            }
+          });
+        });
+        //respeak();
+      }
+    }
+
+
+    function urlFeed(){
+      if ($("#feedUrl").val().length>0){
+        growEgg();
+        $.post('/read', {'text': $("#feedUrl").val()});
+        //updateModel("+",$("#feedUrl").val());
+        $('#feedUrl').val("")
+        $('#feedUrl').focus();     
+        teacherPoints+=1;  
+      }
+    }
+
+
+    function evaluateSpeech(sign){
+      $("#bot").removeClass("shaking")
+      currentText = $("#bot").attr('speech-bubble');
+      console.log(currentText);
+      if (currentText=="..."){
+        window.alert("Hmmm...you can't punish or reward it when it isn't saying anything.  Try feeding it more words!")
+      }else{
+        var oldHeight = $("#bot").height()
+        if (sign=="+"){
+          $("#bot").animate({
+            height:oldHeight*1.2}
+            ,90, function(){
+              $("#bot").animate({height:oldHeight},90)
+            });
+          //respeak();
+        }else{
+          setTimeout(function(){$("#bot").addClass('shaking')},20);
+        }
+        updateModel(sign,currentText);
+        teacherPoints+=1;
+      }
+   
+    }
+
+
+    function displayFeatures(features){
+      if (features.length>10){
+        $("#topParams").empty();
+        for (var i = 0; i < features.length; i++) {
+          f = features[i]
+          $("#topParams").append("<span class='param'><span class='numbah'>"+(i+1)+"</span>  "+f+"</span>")
+        }
+        if (topFeaturesMessage==false){
+          topFeaturesMessage=true;
+          setTimeout(function(){window.alert("On the right you see the top features that THE SPEAKING EGG thinks that you like.\n\nWhen the Egg speaks, its little number brain tries to conform to these paramaters provided by you, its teacher and guardian.")},4000)
+        }
+      }
+    }
+
+
+    function updateModel(evaluation,text){
+      $.get("/retrain", {"evaluation": evaluation, "text": JSON.stringify(text)}).done(function(data){
+        console.log(data)
+        displayFeatures(data['topFeatures'])
+      });
+    }
+
+
+    function speak(){
+      $.get("/speak").done(function(data){
+        console.log(data);
+        var newSpeech = data['utterance']
+        if (newSpeech!=null){
+          $("#bot").attr('speech-bubble',data['utterance']);
+        }else{
+          $("#bot").attr('speech-bubble',"...");
+        }
+      });
+    }
+
+
+    var speechInterval = setInterval(speak, 10000);
+    $('#feedUrl').focus();     
+
+
+    function evaluate_level(){
+      console.log(teacherPoints)
+      if (teacherPoints>=teachingThreshold){
+        congratulate_level();
+        teachingThreshold = teachingThreshold * 2;
+        eggLevel+=1;
+        $('#level-num').text(eggLevel);
+      }
+    }  
+
+
+    var listOfQuotes = []
+
+    function congratulate_level(){
+      if (listOfQuotes.length>0){
+        quote = listOfQuotes.pop();
+        window.alert("Well done!  THE SPEAKING EGG has levelled up.\n\nA dedicated instructor you are.\n\nRemember:\n'"+quote+"'");       
+      }else{
+        window.alert('Well done!  THE SPEAKING EGG has levelled up.')
+      }
+    }
+
+    setInterval(evaluate_level,1000);
+
+window.alert('Welcome to THE SPEAKING EGG.\n\nYou are going to teach the Egg to speak.\n\nTo do this, you must give it text to read, generated by you or copy/pasted from wherever.\n\nWhen it speaks, you can feed it a treat (🍭) to reward a good utterance or scold it (👎) to train it to not say that again.\n\nOn the right you will see what the Egg\'s machine learning model has learned that you like.')
+
+setInterval(function(){window.alert("If THE SPEAKING EGG gets stuck in a rut, saying the same thing again and again, try feeding it a generous helping of text. \n\n You can always reload the page, wiping its mind and starting over.")},1000*120)
+
+
+	</script>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

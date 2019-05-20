@@ -1,0 +1,385 @@
+html,body {
+  height:100%;
+  width:100%;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+#eggBody{
+  size:40px;
+}
+
+#speechDiv{
+  position:absolute;
+  left:500px;
+  top:70px;
+  font-size: 30pt;
+  color:#b915bf;
+  font-family: "Comic Sans MS";
+}
+
+#sideBar {
+  height: 100%; /* Full-height: remove this if you want "auto" height */
+  width: 350px; /* Set the width of the sidebar */
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  z-index: 10; /* Stay on top */
+  top: 0; /* Stay at the top */
+  left: 0;
+  background-color: lightgrey; /* Black */
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 20px;
+}
+
+
+#sideBarInner{
+  margin:5px;
+  margin-left:7px;
+}
+
+.column {
+  float: left;
+  width: 50%;
+}
+
+#left{
+  margin-left:100px;
+  margin-right:100px;
+  height: 100%;
+}
+
+
+
+#clickDiv{
+  z-index: 100;
+}
+
+/*animal*/
+
+/*#animalSvg {
+  position: absolute;
+  width:2000px;
+  height:1000px;
+  bottom: 0px;
+  z-index: -10;
+}
+*/
+#animalSvg {
+  position: absolute;
+  width:2000px;
+  height:1000px;
+  bottom: 0px;
+  z-index: -10;
+   background-image: url('/static/forest.jpeg') ;
+       background-size: 2000px 1000px;;
+
+}
+
+
+#eye1{
+  transform: rotate(-8deg);
+  font-size: 40px;
+  position:absolute;
+  left:615px;
+  bottom:25px;
+}
+
+#eye2{
+  transform: rotate(4deg);
+  font-size: 30px;
+  position:absolute;
+  left:785px;
+  bottom:60px;
+}
+
+#tear{
+  transform: rotate(-4deg);
+  font-size: 40px;
+  position:absolute;
+  left:773px;
+  bottom:32px;
+  visibility: hidden;
+}
+
+
+#eyeLid1{
+  position:absolute;
+  left:230px;
+  bottom:-502px;
+  z-index: 10;
+  transform: scale(0.11) rotate(174deg);
+  filter: grayscale(100%);
+  visibility: hidden;
+}
+
+
+
+#eyeLid2{
+  position:absolute;
+  left:411px;
+  bottom:-474px;
+  z-index: 10;
+  transform: scale(0.08) rotate(184deg) rotateY(180deg);
+  filter: grayscale(100%);
+  visibility: hidden;
+}
+
+
+#mouth0Sad{
+  transform: rotate(80deg);
+  font-size: 37px;
+  position:absolute;
+  left:740px;
+  bottom:20px;
+  visibility: hidden;
+}
+
+#mouth0Happy{
+  transform: rotate(-100deg);
+  font-size: 37px;
+  position:absolute;
+  left:749px;
+  bottom:23px;
+  visibility: hidden;
+}
+
+#mouth0Neutral{
+  transform: rotate(-10deg);
+  font-size: 37px;
+  position:absolute;
+  left:740px;
+  bottom:20px;
+}
+
+#mouth1{
+  position:absolute;
+  left:356px;
+  bottom:-515px;
+  z-index: 10;
+  transform: scale(0.25);
+  visibility: hidden;
+}
+
+
+#mouth2{
+  position:absolute;
+  left:356px;
+  bottom:-520px;
+  z-index: 11;
+  transform: scale(0.10);
+  visibility: hidden;
+}
+
+#mouth3{
+  position:absolute;
+  left:356px;
+  bottom:-520px;
+  z-index: 11;
+  transform: scale(0.10);
+  visibility: hidden;
+}
+
+#mouth4{
+  position:absolute;
+  left:356px;
+  bottom:-520px;
+  z-index: 11;
+  transform: scale(0.10);
+  visibility: hidden;
+}
+
+#mouth5{
+  position:absolute;
+  left:369px;
+  bottom:-520px;
+  z-index: 11;
+  transform: scale(0.10);
+  visibility: hidden;
+}
+
+#mouth6{
+  position:absolute;
+  left:369px;
+  bottom:-520px;
+  z-index: 11;
+  transform: scale(0.10);
+  visibility: hidden;
+}
+
+#mouth7{
+  position:absolute;
+  left:369px;
+  bottom:-520px;
+  z-index: 11;
+  transform: scale(0.10);
+  visibility: hidden;
+}
+
+
+#mouth8{
+  position:absolute;
+  left:369px;
+  bottom:-520px;
+  z-index: 11;
+  transform: scale(0.10);
+  visibility: hidden;
+}
+
+
+#mouth0Ooops{
+  position:absolute;
+  left:356px;
+  bottom:-520px;
+  z-index: 11;
+  transform: scale(0.10) rotate(-180deg);
+  visibility: hidden;
+}
+
+#right{
+  margin-left:100px;
+  margin-right:100px;
+  margin-top:40px;
+}
+
+h2{
+  font-style: oblique;
+}
+
+.numbah{
+  color: #eaeaea;
+}
+
+#buttons{
+  width:90%;
+  text-align:center;
+  margin-right:100px;
+}
+
+button{
+  font-size:20pt;
+  height:38px;
+}
+
+.infoButton{
+  visibility: hidden;
+  font-size:12pt;
+}
+
+
+#feeding{
+  width:90%;
+  text-align: center;
+}
+#feedUrl{
+  height:29px;
+  margin-top:20px;
+  font-size: 20px;
+}
+
+textarea{
+  resize: none;
+  width: 90%;
+  height: 150px;
+}
+
+
+#forestDiv{
+  height: 100%; 
+  left: 350px; 
+  position: fixed;
+  z-index: -10; 
+  background-image: url('/static/forest.jpg')
+}
+
+/* controlling the bot*/
+
+#botBox{
+  height:300px;
+  position:relative;
+  border: solid 2px red;
+  width: 90%;
+  background-image: url('/static/forest.jpg')
+}
+
+#bot{
+  position: absolute;
+  bottom: 2px;
+  margin-left: 125px;
+}
+
+#face{
+  z-index: 10;
+  position:absolute;
+  margin-left:-250px;
+  top:-300px;
+  transform: scale(.03);
+}
+
+.param{
+  color:gray;
+  display:block;
+  padding:5px;
+}
+
+.innerFeature{
+  color:red;
+}
+
+[speech-bubble] {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+
+/* Position tooltip above the element */
+[speech-bubble]:before {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  margin-bottom: 5px;
+  margin-left: -80px;
+  padding: 7px;
+  width: 160px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: lightgray;
+  color: blue;
+  content: attr(speech-bubble);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+/* Triangle hack to make tooltip look like a speech bubble */
+[speech-bubble]:after {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -5px;
+  width: 0;
+  border-top: 5px solid lightgray;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+  content: " ";
+  font-size: 0;
+  line-height: 0;
+}
+
+
+.shaking{
+  animation: shake 1s;
+}
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}

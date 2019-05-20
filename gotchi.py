@@ -66,6 +66,7 @@ class Gotchi:
 
     def get_top_words(self):
         vocab = list(itertools.chain(*self.gen.vocab.values()))
+        vocab = [v.lower() for v in vocab]
         vocab = [v for v in vocab if v not in stops]
         vocab = [v for v in vocab if len(v)>1]
         most_common = [k.lower() for k,v in FreqDist(vocab).most_common(50)]

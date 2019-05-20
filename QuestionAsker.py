@@ -43,7 +43,7 @@ class QuestionAsker:
 		auxverb = "does"
 		if number=="NNS":
 			auxverb = "do"
-		return "Why %s the %s %s?" % (auxverb,noun,verb)
+		return "Why %s the %s %s?" % (auxverb,noun.lower(),verb.lower())
 
 
 
@@ -51,9 +51,9 @@ class QuestionAsker:
 		spacified = nlp(sent)
 		noun_verb_number = []
 		for token in spacified:
-			if token.pos_ == "VERB":
+			if (token.pos_ == "VERB" and token.text.isalpha()):
 				if token.lemma_ != 'be':
-					nouns = [t for t in token.children if (t.pos_==u'NOUN' and t.dep_=="nsubj")]
+					nouns = [t for t in token.children if (t.pos_==u'NOUN' and t.dep_=="nsubj" and t.text.isalpha())]
 					if nouns!=[]:
 						noun = random.choice(nouns)
 						noun_verb_number.append((noun.text,token.text,noun.tag_))
@@ -65,7 +65,7 @@ class QuestionAsker:
 		verb = "is"
 		if number=="NNS":
 			verb = "are"
-		return "Why %s the %s %s?" % (verb,noun,adj)
+		return "Why %s the %s %s?" % (verb,noun.lower(),adj.lower())
 
 
 
@@ -73,8 +73,8 @@ class QuestionAsker:
 		spacified = nlp(sent)
 		adj_n_number = []
 		for token in spacified:
-			if token.tag_ in ["NN","NNS"]:
-				adjectives = [t.text for t in token.children if t.dep_==u'amod']
+			if (token.tag_ in ["NN","NNS"] and token.text.isalpha()):
+				adjectives = [t.text for t in token.children if t.dep_==u'amod' and t.text.isalpha()]
 				if adjectives!=[]:
 					adj_n_number.append((random.choice(adjectives),token.text,token.tag_))
 		return self.format_adj_question(*random.choice(adj_n_number))

@@ -22,4 +22,4 @@ Developed for workshops with Alex Juhasz at Dartmouth College and ISCP, Brooklyn
 
 ***
 
-[readme image](readme_image.png)
+![readme image](readme_image.png)

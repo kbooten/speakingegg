@@ -19,3 +19,7 @@ The bot sometimes asks questions about what it has said, encouraging further car
 ***
 
 Developed for workshops with Alex Juhasz at Dartmouth College and ISCP, Brooklyn.  See documentation [here](http://fakenews-poetry.org/dartmouth.html).
+
+***
+
+[readme image](readme_image.png)
